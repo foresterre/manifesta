@@ -7,8 +7,11 @@ use crate::{Channel, Release, ReleaseIndex, TResult};
 use std::collections::BTreeSet;
 use std::iter::FromIterator;
 
+#[cfg(feature = "fetch")]
 mod dl;
+#[cfg(feature = "source")]
 mod meta_manifest;
+#[cfg(feature = "source")]
 mod release_manifest;
 
 pub struct ChannelManifests {
@@ -24,6 +27,7 @@ impl ChannelManifests {
     }
 }
 
+#[cfg(feature = "source_channel_manifests")]
 impl Source for ChannelManifests {
     fn build_index(&self) -> TResult<ReleaseIndex> {
         let releases = self
@@ -40,6 +44,7 @@ impl Source for ChannelManifests {
     }
 }
 
+#[cfg(feature = "fetch_channel_manifests")]
 impl FetchResources for ChannelManifests {
     fn fetch_channel(channel: Channel) -> TResult<Self> {
         let source = fetch_meta_manifest()?;

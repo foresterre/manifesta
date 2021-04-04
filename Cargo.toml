@@ -10,31 +10,78 @@ documentation = "https://docs.rs/rust-releases"
 repository = "https://github.com/foresterre/rust-releases"
 
 [features]
-default = ["aws_index"]
-# Dependencies requires to download the S3 index
-aws_index = ["rusoto_core", "rusoto_s3", "tokio"]
+default = ["source_impls", "fetch_impls"]
+
+# ------
+# Groups
+# ------
+
+source_impls = ["source_channel_manifests", "source_dist_index", "source_rust_changelog", "source_rust_dist"]
+fetch_impls = ["fetch_channel_manifests", "fetch_rust_changelog", "fetch_rust_dist"]
+
+# -----------------------
+# Enable/disable a Source
+# -----------------------
+
+# impl Source for ChannelManifest
+source_channel_manifests = ["serde", "toml"]
+# impl FetchResources for ChannelManifest
+fetch_channel_manifests = ["attohttpc"]
+
+# impl Source for DistIndex
+source_dist_index = []
+# impl FetchResources for DistIndex: N/A
+
+# impl Source for RustChangelog
+source_rust_changelog = []
+# impl FetchResources for RustChangelog
+fetch_rust_changelog = ["attohttpc"]
+
+# impl Source for RustDist
+source_rust_dist = ["regex"]
+# impl FetchResources for RustDist
+fetch_rust_dist = ["rusoto_core", "rusoto_s3", "tokio"]
+
+# -----------------
+# Internal features
+# -----------------
 
 # internal feature: enable download test, which is heavily rate limitted
 dl_test = []
 
 [dependencies]
-# error handling
+
+
+# --------------------
+# General dependencies
+# --------------------
+
+# Handling release versions
+semver = "0.11"
+
+# Error handling
 thiserror = "1.0.23"
 
-# caching, fetching, etc.
-attohttpc = "0.16.1"
+# Caching
 directories-next = "2.0.0"
 
+# -----------------------
+# Dependencies per Source
+# -----------------------
+
+# Multiple
+attohttpc = { version = "0.16.1", optional = true }
+
+# Source: ChannelManifests
+serde = { version = "1", features = ["derive"], optional = true }
+toml = { version = "0.5", optional = true }
+
+# Source: RustDist
 rusoto_core = { version = "0.46.0", optional = true }
 rusoto_s3 = { version = "0.46.0", optional = true }
 tokio = { version = "1", optional = true }
-
-# parsing manifests
-semver = "0.11"
-serde = { version = "1", features = ["derive"] }
-toml = "0.5"
-regex = "1.4.5"
-lazy_static = "1.4.0"
+regex = { version = "1.4.5", optional = true }
+lazy_static = { version = "1.4.0", optional = true }
 
 [dev-dependencies]
 yare = "1.0.0"

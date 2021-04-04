@@ -14,6 +14,7 @@ macro_rules! dl_test {
     }};
 }
 
+#[cfg(feature = "attohttpc")]
 pub(crate) fn download_if_not_stale<P: AsRef<Path>>(
     url: &str,
     cache_dir: &Path,

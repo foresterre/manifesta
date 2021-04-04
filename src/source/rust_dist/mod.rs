@@ -1,5 +1,5 @@
 use crate::source::Document;
-#[cfg(feature = "aws_index")]
+#[cfg(feature = "source_rust_dist")]
 use crate::source::FetchResources;
 use crate::source::Source;
 use crate::{Channel, Release, ReleaseIndex, TResult};
@@ -7,7 +7,7 @@ use regex::{Captures, Regex};
 use std::collections::BTreeSet;
 use std::iter::FromIterator;
 
-#[cfg(feature = "aws_index")]
+#[cfg(feature = "fetch_rust_dist")]
 pub(in crate::source::rust_dist) mod dl;
 
 pub struct RustDist {
@@ -21,11 +21,13 @@ impl RustDist {
     }
 }
 
+#[cfg(feature = "source_rust_dist")]
 lazy_static::lazy_static! {
     static ref MATCHER: Regex =
         Regex::new(r"(?m)^dist/rustc-(?P<major>\d+).(?P<minor>\d+).(?P<patch>\d+)(?:\-(alpha|beta|nightly)(\.\d+))?").unwrap();
 }
 
+#[cfg(feature = "source_rust_dist")]
 impl Source for RustDist {
     fn build_index(&self) -> TResult<ReleaseIndex> {
         let contents = self.source.load()?;
@@ -40,6 +42,7 @@ impl Source for RustDist {
     }
 }
 
+#[cfg(feature = "source_rust_dist")]
 fn parse_release(capture: Captures) -> TResult<Release> {
     let major = capture["major"]
         .parse::<u64>()
@@ -54,7 +57,7 @@ fn parse_release(capture: Captures) -> TResult<Release> {
     Ok(Release::new(semver::Version::new(major, minor, patch)))
 }
 
-#[cfg(feature = "aws_index")]
+#[cfg(feature = "fetch_rust_dist")]
 impl FetchResources for RustDist {
     fn fetch_channel(channel: Channel) -> TResult<Self> {
         if let Channel::Stable = channel {
@@ -71,7 +74,7 @@ pub enum RustDistError {
     #[error("Channel {0} is not yet available for the 'DistIndex' source type")]
     ChannelNotAvailable(Channel),
 
-    #[cfg(feature = "aws_index")]
+    #[cfg(feature = "source_rust_dist")]
     #[error("{0}")]
     RusotoTlsError(#[from] rusoto_core::request::TlsError),
 

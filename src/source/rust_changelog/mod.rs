@@ -3,6 +3,7 @@ use crate::source::Document;
 use crate::source::{FetchResources, Source};
 use crate::{Channel, Release, ReleaseIndex, TResult};
 
+#[cfg(feature = "fetch_rust_changelog")]
 pub(in crate::source::rust_changelog) mod dl;
 
 pub struct RustChangelog {
@@ -16,6 +17,7 @@ impl RustChangelog {
     }
 }
 
+#[cfg(feature = "source_rust_changelog")]
 impl Source for RustChangelog {
     fn build_index(&self) -> TResult<ReleaseIndex> {
         let contents = self.source.load()?;
@@ -34,6 +36,7 @@ impl Source for RustChangelog {
     }
 }
 
+#[cfg(feature = "fetch_rust_changelog")]
 impl FetchResources for RustChangelog {
     fn fetch_channel(channel: Channel) -> TResult<Self> {
         if let Channel::Stable = channel {

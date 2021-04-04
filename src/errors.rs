@@ -15,6 +15,7 @@ pub enum RustReleasesError {
     #[error("{0}")]
     Io(#[from] std::io::Error),
 
+    #[cfg(feature = "attohttpc")]
     #[error("{0}")]
     Network(#[from] attohttpc::Error),
 
@@ -27,15 +28,22 @@ pub enum RustReleasesError {
     // ---------------
     // Source errors
     // ---------------
-    #[error("{0}")]
-    DistIndexError(#[from] DistIndexError),
-
+    #[cfg(any(
+        feature = "source_channel_manifests",
+        feature = "fetch_channel_manifests"
+    ))]
     #[error("{0}")]
     ChannelManifestsError(#[from] ChannelManifestsError),
 
+    #[cfg(feature = "source_dist_index")]
+    #[error("{0}")]
+    DistIndexError(#[from] DistIndexError),
+
+    #[cfg(any(feature = "source_rust_changelog", feature = "fetch_rust_changelog"))]
     #[error("{0}")]
     RustChangelogError(#[from] RustChangelogError),
 
+    #[cfg(any(feature = "source_rust_dist", feature = "fetch_rust_dist"))]
     #[error("{0}")]
     RustDistError(#[from] RustDistError),
 }

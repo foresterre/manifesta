@@ -9,15 +9,27 @@ use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 
+#[cfg(any(
+    feature = "source_channel_manifests",
+    feature = "fetch_channel_manifests"
+))]
 pub mod channel_manifests;
+#[cfg(feature = "source_rust_dist")]
 pub mod dist_index;
+#[cfg(any(feature = "source_rust_changelog", feature = "fetch_rust_changelog"))]
 pub mod rust_changelog;
+#[cfg(any(feature = "source_rust_dist", feature = "fetch_rust_dist"))]
 pub mod rust_dist;
 
+/// An implementation of the `Source` trait can be used to build a release index.
 pub trait Source {
     fn build_index(&self) -> TResult<ReleaseIndex>;
 }
 
+/// An implementation of the `FetchResources` trait can be used to fetch the input data necessary
+/// for a [`Source`] implementation to build an index.
+///
+/// [`Source`]: crate::source::Source
 pub trait FetchResources
 where
     Self: Sized,
@@ -25,6 +37,7 @@ where
     fn fetch_channel(channel: Channel) -> TResult<Self>;
 }
 
+/// Pre-allocated amount of memory for vectors, in case we don't have an idea how much we'll need.
 pub(crate) const DEFAULT_MEMORY_SIZE: usize = 4096;
 
 /// A `Document` represents a resource which can be used as an input to construct a `ReleaseIndex`.
@@ -41,6 +54,7 @@ pub enum Document {
 }
 
 impl Document {
+    /// Load a resource
     pub fn load(&self) -> TResult<Vec<u8>> {
         match self {
             Self::LocalPath(path) => Self::read_all_from_disk(&path),
@@ -48,6 +62,7 @@ impl Document {
         }
     }
 
+    // Load the input data file from the given path. Only a single file is supported.
     fn read_all_from_disk(path: &Path) -> TResult<Vec<u8>> {
         let mut reader = BufReader::new(File::open(path)?);
 

@@ -45,6 +45,7 @@ impl DistIndex {
     }
 }
 
+#[cfg(feature = "source_dist_index")]
 impl Source for DistIndex {
     fn build_index(&self) -> TResult<ReleaseIndex> {
         let contents = self.source.load()?;

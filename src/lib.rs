@@ -125,6 +125,18 @@
 //! <sup>3</sup>: Speed for the `FetchResources` trait is primarily limited by your own download speed, and the rate limiting of the server from which the resources are fetched<br>
 //! <sup>4</sup>: Approximate as of 2020-03-03 <br>
 //!
+//! ## Conditional Compilation
+//!
+//! `Source` implementations can be enabled and disabled by using conditional compilation flags, known as
+//! `features` in the Cargo manifest. Each source has two flags: the first adds parsing
+//! input data, and the second adds fetching of input files. The input parsers can be collectively
+//! enabled by providing the `source_impls` feature flag. The fetch implementations can be collectively\
+//! enabled by providing the `fetch_impls` feature flag. Alternatively, you can pick and select only the
+//! features you need. For example, to only use the `RustDist` source, with both the parsing and fetching
+//! parts, you could enable just `source_rust_dist` and `fetch_rust_dist`. See the root Cargo.toml manifest
+//! for all available options. With Cargo you can run selected flags like so:
+//! `cargo build --no-default-features --features "source_rust_dist fetch_rust_dist"`
+//!
 //!
 //! ## Issues
 //!
